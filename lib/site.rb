@@ -4,8 +4,9 @@ require_relative '../mongo_client'
 class Site
   attr_reader :urls_to_flats
 
-  def initialize(url)
+  def initialize(url, force = false)
     @url = url
+    @force = force
     @next_page = 0
     @urls_to_flats = []
 
