@@ -15,4 +15,16 @@ namespace :parser do
       puts "#{url} enqueued"
     end
   end
+
+  desc 'Export all flats to .csv'
+  task :export do
+    db = ENV['DB'] || 'flats'
+    collection = ENV['COLLECTION'] || 'flats'
+    output = ENV['OUTPUT'] || "data/export.csv"
+    fields = ENV['FIELDS'] || "url,price,rooms,square,floor,house_floors,coord_lat,coord_lon,region,city,street_house"
+    type = ENV['TYPE'] || 'csv'
+
+    command = "mongoexport --db #{db} --collection #{collection} --out #{output} --fields #{fields} --type #{type}"
+    system command
+  end
 end
