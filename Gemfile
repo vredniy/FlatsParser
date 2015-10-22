@@ -10,6 +10,8 @@ gem 'sidekiq'
 gem 'curb'
 gem 'nokogiri'
 
+gem 'activesupport', require: false
+
 group :development do
   gem 'pry'
 end
