@@ -1,2 +1,6 @@
-data/*.csv
+data/export.csv
 .Rproj.user
+R/.RData
+R/.Rhistory
+
+R/packrat/src/

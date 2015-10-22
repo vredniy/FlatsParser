@@ -1,6 +1,7 @@
 require 'curb'
 require 'nokogiri'
 require_relative '../mongo_client'
+require_relative 'metro'
 
 class Flat
   attr_reader :url
@@ -71,6 +72,32 @@ class Flat
       raise 'wrong address'
     end
 
+    metro_distance = [nil, nil]
+
+    if @doc.css('.metro-list').size != 0
+      distance = 0
+
+      closest_metro = @doc.css('.metro-list > .metro-item').sort_by do |m|
+        t = m.css('.c-2').text
+
+        distance = if t[/км/]
+                     t.to_f * 1000
+                   else
+                     t.to_f
+                   end
+      end.first
+
+      metro_distance = [
+        closest_metro.children[2].text.strip,
+        distance
+      ]
+    end
+
+    lat = coordinates.attributes['data-map-lat'].text
+    lon = coordinates.attributes['data-map-lon'].text
+
+    metro_and_distance_by_coordinates = Metro.new(lat, lon).closest_station
+
     street_house = @doc.css('#toggle_map')[0].text
 
     {
@@ -79,11 +106,15 @@ class Flat
       square: square.to_f,
       floor: floor,
       house_floors: house_floors,
-      coord_lat: coordinates.attributes['data-map-lat'].text,
-      coord_lon: coordinates.attributes['data-map-lon'].text,
+      coord_lat: lat,
+      coord_lon: lon,
       region: region,
       city: city,
       street_house: street_house,
+      metro_by_site: metro_distance[0],
+      metro_distance_by_site: metro_distance[1],
+      metro_by_coordinates: metro_and_distance_by_coordinates[0],
+      metro_distance_by_coordinates: metro_and_distance_by_coordinates[1]
     }
   end
 end

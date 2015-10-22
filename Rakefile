@@ -21,7 +21,11 @@ namespace :parser do
     db = ENV['DB'] || 'flats'
     collection = ENV['COLLECTION'] || 'flats'
     output = ENV['OUTPUT'] || "data/export.csv"
-    fields = ENV['FIELDS'] || "url,price,rooms,square,floor,house_floors,coord_lat,coord_lon,region,city,street_house"
+    fields = ENV['FIELDS'] || %w(
+                                url price rooms square floor house_floors coord_lat
+                                coord_lon region city street_house metro_by_site metro_distance_by_site
+                                metro_by_coordinates metro_distance_by_coordinates
+    ).join(',')
     type = ENV['TYPE'] || 'csv'
 
     command = "mongoexport --db #{db} --collection #{collection} --out #{output} --fields #{fields} --type #{type}"
