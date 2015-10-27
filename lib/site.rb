@@ -1,4 +1,5 @@
 require 'curb'
+require 'nokogiri'
 require_relative '../mongo_client'
 
 class Site
@@ -29,18 +30,21 @@ class Site
 
       return nil unless content
 
-      doc = Nokogiri::HTML(content)
+      doc = ::Nokogiri::HTML(content)
 
-      urls = doc.css('h3.title > a').map { |e| normalize_url(e[:href]) }
+      urls = doc.css(url_to_flat_css).map { |e| normalize_url(e[:href]) }
 
-      $mongo_client[:pages].insert_one(url: next_url, content: content, urls_to_flats: urls)
+      $mongo_client[:pages].insert_one(
+        url: next_url, content: content,
+        urls_to_flats: urls, provider: provider
+      )
     end
 
     $mongo_client[:pages].find(url: next_url).first
   end
 
   def curl
-    curl = Curl.get(next_url)
+    curl = ::Curl.get(next_url)
 
     if curl.status.to_i == 200
       curl.body.force_encoding('utf-8')
@@ -48,14 +52,6 @@ class Site
   end
 
   def next_url
-    "#{@url}&p=%d" % @next_page
-  end
-
-  def normalize_url(url)
-    if url[/http/]
-      url
-    else
-      "https://www.avito.ru#{url}"
-    end
+    "#{@url}&p=#{@next_page}"
   end
 end

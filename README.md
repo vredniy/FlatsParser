@@ -1,13 +1,8 @@
-# Simple Avito Flats parser
+# Simple Avito.ru and Cian.ru Flats parser
 
 1. `bundle`
 2. `foreman start`
-3. `rake parser:enqueue URLS="url1,url2,url3"` to enqueue urls
-4. Open browser at **http://localhost:9292** for sidekiq monitoring
-
-### Some useful info (Sidekiq)
-
-* `Sidekiq.redis {|c| puts c.keys('*') }` shows all redis keys
-* `Sidekiq.redis {|c| c.del('stat:processed') }` deletes processed jobs stats
-* `Sidekiq.redis {|c| c.del('stat:failed') }` deletes failed jobs stats
-* `Sidekiq.redis {|c| c.del('retry') }` deletes retries stats
+3. Edit **data/variants.csv**
+4. `ruby enqueue.rb` to enqueue urls
+5. Open browser at **http://localhost:9292** for sidekiq monitoring
+6. `rake export` for export data to csv format (**data/export.csv** file) for further analysis
